@@ -1,108 +1,179 @@
-<p align="center">
-    <a href="https://sylius.com" target="_blank">
-        <img src="https://demo.sylius.com/assets/shop/img/logo.png" />
-    </a>
-</p>
+Sylius Klarna Payments Plugin
+============================================
 
-<h1 align="center">Plugin Skeleton</h1>
+This plugin is designed to provide Klarna Payments to Sylius
 
-<p align="center">Skeleton for starting Sylius plugins.</p>
+By design, Klarna Payments are authorized. Capture or cancellation are available from admin.
+Refund of captured payments is also possible.
 
-## Documentation
+## Klarna Payments
 
-For a comprehensive guide on Sylius Plugins development please go to Sylius documentation,
-there you will find the <a href="https://docs.sylius.com/en/latest/plugin-development-guide/index.html">Plugin Development Guide</a>, that is full of examples.
+See https://docs.klarna.com/klarna-payments/  
+https://docs.klarna.com/api/payments/
 
-## Quickstart Installation
+Create a test Klarna Merchant Account : https://docs.klarna.com/resources/test-environment/before-you-test/
 
-### Traditional
+## Plugin Installation
 
-1. Run `composer create-project sylius/plugin-skeleton ProjectName`.
 
-2. From the plugin skeleton root directory, run the following commands:
+### Install using Composer :
 
-    ```bash
-    $ (cd tests/Application && yarn install)
-    $ (cd tests/Application && yarn build)
-    $ (cd tests/Application && APP_ENV=test bin/console assets:install public)
-    
-    $ (cd tests/Application && APP_ENV=test bin/console doctrine:database:create)
-    $ (cd tests/Application && APP_ENV=test bin/console doctrine:schema:create)
-    ```
+```shell
+composer require family-web-diffusion/sylius-klarna-payments-plugin
+```
 
-To be able to set up a plugin's database, remember to configure you database credentials in `tests/Application/.env` and `tests/Application/.env.test`.
+> Note: If the flex recipe has not been applied then follow the next step.
 
-### Docker
+Enable this plugin :
 
-1. Execute `docker compose up -d`
+```php
+<?php
 
-2. Initialize plugin `docker compose exec app make init`
+# config/bundles.php
 
-3. See your browser `open localhost`
+return [
+    // ...
+    FamilyWebDiffusion\SyliusKlarnaPaymentsPlugin\FamilyWebDiffusionSyliusKlarnaPaymentsPlugin::class => ['all' => true],  
+    // ...
+];
+```
 
-## Usage
+### Configuration
+- Create the file `config/packages/family_web_diffusion_sylius_klarna_payments.yaml` and add the following content
+```yaml
+imports:
+  - { resource: '@FamilyWebDiffusionSyliusKlarnaPaymentsPlugin/config/config.yml' }
+```
+
+Override plugin options in `config/packages/family_web_diffusion_sylius_klarna_payments.yaml`, if needed:
+```yaml
+family_web_diffusion_sylius_klarna_payments:
+  client_retry_limit: 3
+  display_birthday: true
+```
+client_retry_limit (int) default 3, should be between 1 and 6 -> the number of times the client try to connect to Klarna API in case of connection error  
+display_birthday (true/false) default true -> if true, the birthday of the sylius registered customer is sent to Klarna along with its email, enabling auto-connection for existing account  
+If you prefer that Klarna asks user's birthday for each payment (or are concerned that sylius user birthday is false), set 'display_birthday' to false
+
+- Enable SymfonyHTTPClient
+  In `config/packages/framework.yaml`, add (for exemple):
+```    
+framework:
+[...]
+    http_client:
+        default_options:
+            max_duration: 10
+```
+
+### Modifiy Order
+
+Implements FamilyWebDiffusion\SyliusKlarnaPaymentsPlugin\Entity\OrderInterface and
+use FamilyWebDiffusion\SyliusKlarnaPaymentsPlugin\Entity\OrderTrait on Order
+
+See for exemple Tests\FamilyWebDiffusion\SyliusKlarnaPaymentsPlugin\Entity\Order, tests/Application/src/Resources/config/config.yaml
+and tests/Application/src/Resources/config/doctrine/Order.orm.yml
+
+### Copy or adapt templates
+
+Copy tests/Application/templates/bundles/SyliusShopBundle/Order/show.html.twig 
+or adapt it to your needs
+
+
+## Quickstart Usage
+
+### Start Docker
+
+Execute `docker compose up -d`  
+
+### Starting test Application
+
+#### First Installation
+```bash
+docker exec --user www-data:www-data -w /app sylius-klarna-payments-plugin_app_1 composer install
+docker exec --user www-data:www-data -w /app/tests/Application sylius-klarna-payments-plugin_app_1 yarn install
+docker exec --user www-data:www-data -w /app/tests/Application sylius-klarna-payments-plugin_app_1 yarn build
+docker exec --user www-data:www-data -w /app/tests/Application sylius-klarna-payments-plugin_app_1 bin/console assets:install public
+```
+
+### Klarna Account
+When your Klarna test account is created, connect to it to generate a pair of Klarna API credentials
+
+Replace in tests/Application/.env.local
+```
+KLARNA_API_TEST_USERNAME=test
+KLARNA_API_TEST_PASSWORD=test
+```
+by your Klarna test credential
+
+Note: this is for test purpose only
+for production, Klarna credential are set on Sylius admin configuration Payment Methods panel
+
+#### After starting/restarting docker
+(database is dropped at down)
+```bash
+docker exec --user www-data:www-data -w /app/tests/Application sylius-klarna-payments-plugin_app_1 bin/console doctrine:database:create --if-not-exists -e dev
+docker exec --user www-data:www-data -w /app/tests/Application sylius-klarna-payments-plugin_app_1 bin/console doctrine:schema:create -n  -e dev
+docker exec --user www-data:www-data -w /app/tests/Application sylius-klarna-payments-plugin_app_1 bin/console sylius:fixtures:load -n -e dev
+docker exec --user www-data:www-data -w /app/tests/Application sylius-klarna-payments-plugin_app_1 bin/console sylius:fixtures:load familywebdiffusion_klarna_payments -n -e dev
+```
+
+Open browser at http://localhost/ and switch to channel "DE Web Store"
+
+## Utilities
+
+### Connect to docker app container:
+As root:
+```bash
+docker exec -it sylius-klarna-payments-plugin_app_1 sh
+```
+
+As web:
+```bash
+docker exec --user www-data:www-data -it sylius-klarna-payments-plugin_app_1 sh
+```
 
 ### Running plugin tests
 
   - PHPUnit
 
     ```bash
-    vendor/bin/phpunit
+    bin/phpunit
     ```
 
   - PHPSpec
 
     ```bash
-    vendor/bin/phpspec run
+    bin/phpspec run
     ```
 
   - Behat (non-JS scenarios)
 
     ```bash
-    vendor/bin/behat --strict --tags="~@javascript"
+    docker exec --user www-data:www-data -w /app/tests/Application sylius-klarna-payments-plugin_app_1 bin/console doctrine:database:create --if-not-exists -e test
+    docker exec --user www-data:www-data -w /app/tests/Application sylius-klarna-payments-plugin_app_1 bin/console doctrine:schema:create -n  -e test
+    docker exec --user www-data:www-data -w /app/tests/Application sylius-klarna-payments-plugin_app_1 bin/console sylius:fixtures:load -n -e test
+    docker exec --user www-data:www-data -w /app/tests/Application sylius-klarna-payments-plugin_app_1 bin/console sylius:fixtures:load familywebdiffusion_klarna_payments -n -e test
+    docker exec --user www-data:www-data -w /app sylius-klarna-payments-plugin_app_1 sh -c 'export APP_ENV=test && bin/behat --strict'
     ```
 
-  - Behat (JS scenarios)
- 
-    1. [Install Symfony CLI command](https://symfony.com/download).
- 
-    2. Start Headless Chrome:
-    
-      ```bash
-      google-chrome-stable --enable-automation --disable-background-networking --no-default-browser-check --no-first-run --disable-popup-blocking --disable-default-apps --allow-insecure-localhost --disable-translate --disable-extensions --no-sandbox --enable-features=Metal --headless --remote-debugging-port=9222 --window-size=2880,1800 --proxy-server='direct://' --proxy-bypass-list='*' http://127.0.0.1
-      ```
-    
-    3. Install SSL certificates (only once needed) and run test application's webserver on `127.0.0.1:8080`:
-    
-      ```bash
-      symfony server:ca:install
-      APP_ENV=test symfony server:start --port=8080 --dir=tests/Application/public --daemon
-      ```
-    
-    4. Run Behat:
-    
-      ```bash
-      vendor/bin/behat --strict --tags="@javascript"
-      ```
-    
   - Static Analysis
   
     - Psalm
     
       ```bash
-      vendor/bin/psalm
+      bin/psalm
       ```
       
     - PHPStan
     
       ```bash
-      vendor/bin/phpstan analyse -c phpstan.neon -l max src/  
+      bin/phpstan analyse -c phpstan.neon -l max src/  
       ```
 
   - Coding Standard
   
     ```bash
-    vendor/bin/ecs check
+    bin/ecs check
     ```
 
 ### Opening Sylius with your plugin
@@ -111,12 +182,14 @@ To be able to set up a plugin's database, remember to configure you database cre
 
     ```bash
     (cd tests/Application && APP_ENV=test bin/console sylius:fixtures:load)
+    (cd tests/Application && bin/console sylius:fixtures:load familywebdiffusion_klarna_payments -n -e test)
     (cd tests/Application && APP_ENV=test bin/console server:run -d public)
     ```
     
 - Using `dev` environment:
 
     ```bash
-    (cd tests/Application && APP_ENV=dev bin/console sylius:fixtures:load)
+    (cd tests/Application && bin/console sylius:fixtures:load -n -e dev)
+    (cd tests/Application && bin/console sylius:fixtures:load familywebdiffusion_klarna_payments -n -e dev)
     (cd tests/Application && APP_ENV=dev bin/console server:run -d public)
     ```

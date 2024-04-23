@@ -1,0 +1,6 @@
+services:
+    familywebdiffusion_sylius_klarna_payments_plugin.behat.context.common.feature:
+        public: true
+        class: Tests\FamilyWebDiffusion\SyliusKlarnaPaymentsPlugin\Behat\Context\Common\FeatureContext
+        tags:
+            - { name: fob.context_service }

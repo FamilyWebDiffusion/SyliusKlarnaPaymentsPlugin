@@ -1,0 +1,4 @@
+services:
+    FamilyWebDiffusion\SyliusKlarnaPaymentsPlugin\Helper\SyliusKlarnaPaymentMethodHelper:
+        arguments:
+            - '@sylius.repository.payment_method'

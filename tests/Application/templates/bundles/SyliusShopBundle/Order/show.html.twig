@@ -1,0 +1,101 @@
+{% extends '@SyliusShop/layout.html.twig' %}
+
+{% import '@SyliusUi/Macro/messages.html.twig' as messages %}
+
+{% form_theme form '@SyliusShop/Form/theme.html.twig' %}
+
+{% block title %}{{ 'sylius.ui.summary_of_your_order'|trans }} | {{ parent() }}{% endblock %}
+
+{% block content %}
+    <div class="ui segment">
+        {% include '@SyliusShop/Order/_summary.html.twig' %}
+
+        {% if order.paymentState in ['awaiting_payment'] %}
+            {{ form_start(form, {'action': path('sylius_shop_order_show', {'tokenValue': order.tokenValue}), 'attr': {'class': 'ui loadable form', 'novalidate': 'novalidate'}}) }}
+            <input type="hidden" name="_method" value="PUT" />
+
+            {% include '@SyliusShop/Checkout/SelectPayment/_form.html.twig' %}
+            <div class="ui hidden divider"></div>
+
+            {% if order.checkoutState == constant('Sylius\\Component\\Core\\OrderCheckoutStates::STATE_COMPLETED') and
+                    order.klarnaSessionId is not null %}
+                {% set klarnaSession = getAlreadyInitializedKlarnaPaymentSession(order) %}
+
+                    <div id="klarna-payments-container"></div>
+
+                    <script type="text/javascript">
+                        const methodCodes = {{ getKlarnaMethods(order)|json_encode|raw }};
+                        const completeKlarnaOrder = {{ getCompleteKlarnaOrder(order.lastPayment)|json_encode|raw }};
+
+                        window.klarnaAsyncCallback = function () {
+                            Klarna.Payments.init({
+                                client_token: '{{ klarnaSession.clientToken }}'
+                            });
+
+                            Klarna.Payments.load({
+                                container: '#klarna-payments-container',
+                            }, function (res) {
+                                if (res.show_form === false) {
+                                    let wrapperEl = document.getElementById('klarna-payments-container-wrapper');
+                                    if (wrapperEl) {
+                                        wrapperEl.style.display = 'none';
+                                    }
+                                }
+                            });
+
+                            const form = document.querySelector("form[name='sylius_checkout_select_payment']");
+
+                            form.onsubmit = function (e) {
+                                e.preventDefault();
+                                e.stopPropagation();
+
+                                if (!completeKlarnaOrder.hasOwnProperty('billing_address')) {
+                                    return;
+                                }
+
+                                const methodSelected = form.querySelector("input[type='radio']:checked").value;
+
+                                if (!methodCodes[methodSelected]) {
+                                    form.submit();
+                                    return;
+                                }
+
+                                Klarna.Payments.authorize({
+                                        payment_method_category: methodCodes[methodSelected]
+                                    },
+                                    completeKlarnaOrder
+                                    , function (res) {
+                                        if (res.show_form && res.approved) {
+
+                                            form.submit();
+                                            return;
+                                        }
+                                        if (res.show_form && !res.approved) {
+                                            // klarna shows errors in its own popup
+                                        }
+                                        if (!res.show_form && !res.approved) {
+                                            let wrapperEl = document.getElementById('klarna-payments-container-wrapper');
+                                            if (wrapperEl) {
+                                                wrapperEl.style.display = 'none';
+                                            }
+                                        }
+                                    });
+                                return false;
+                            };
+                        };
+
+                    </script>
+                    <script src="https://x.klarnacdn.net/kp/lib/v1/api.js" async></script>
+            {% endif %}
+
+            <button type="submit" class="ui large blue icon labeled button" id="sylius-pay-link" {{ sylius_test_html_attribute('pay-link') }}>
+                <i class="check icon"></i> {{ 'sylius.ui.pay'|trans }}
+            </button>
+
+            {{ form_row(form._token) }}
+            {{ form_end(form, {'render_rest': false}) }}
+        {% else %}
+            {{ messages.info('sylius.ui.you_can_no_longer_change_payment_method_of_this_order') }}
+        {% endif %}
+    </div>
+{% endblock %}

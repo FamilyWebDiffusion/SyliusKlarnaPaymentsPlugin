@@ -1,0 +1,7 @@
+services:
+    FamilyWebDiffusion\SyliusKlarnaPaymentsPlugin\Twig\KlarnaOrderExtension:
+        arguments:
+            - '@familywebdiffusion_sylius_klarna_payments_plugin.payment_data_builder'
+            - '@service_container'
+            - '@FamilyWebDiffusion\SyliusKlarnaPaymentsPlugin\Helper\SyliusKlarnaPaymentMethodHelper'
+        tags: ['twig.extension']

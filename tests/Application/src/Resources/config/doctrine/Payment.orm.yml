@@ -1,0 +1,3 @@
+Tests\FamilyWebDiffusion\SyliusKlarnaPaymentsPlugin\Entity\Payment:
+    type: mappedSuperclass
+    table: sylius_payment

@@ -1,0 +1,11 @@
+services:
+
+    FamilyWebDiffusion\SyliusKlarnaPaymentsPlugin\Client\HttpClient:
+        public: true
+        arguments:
+            - '@FamilyWebDiffusion\SyliusKlarnaPaymentsPlugin\Client\RetryableHttpClientFactory'
+            - '@logger'
+
+    FamilyWebDiffusion\SyliusKlarnaPaymentsPlugin\Client\RetryableHttpClientFactory:
+        arguments:
+            - '@http_client'

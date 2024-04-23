@@ -1,0 +1,16 @@
+sylius.form.gateway_configuration.familywebdiffusion_klarna_payments.api_username: Nom d'utilisateur API (UID)
+sylius.form.gateway_configuration.familywebdiffusion_klarna_payments.api_password: Mot de passe API
+sylius.form.gateway_configuration.familywebdiffusion_klarna_payments.sandbox: Mode Test
+sylius.gateway_factory.familywebdiffusion_klarna_payments.label: Klarna Payments
+sylius.form.gateway_configuration.familywebdiffusion_klarna_payments.api_zone: Zone de votre compte Klarna
+sylius.form.gateway_configuration.familywebdiffusion_klarna_payments.server_europe: Europe
+sylius.form.gateway_configuration.familywebdiffusion_klarna_payments.server_north_america: Amérique du Nord
+sylius.form.gateway_configuration.familywebdiffusion_klarna_payments.server_oceania: Océanie
+sylius.form.gateway_configuration.familywebdiffusion_klarna_payments.enabled_payment_method: 'Méthode de paiement Klarna activée
+    (Vérifiez avec votre représentant Klarna quelle méthode est activée sur votre compte)
+    La disponibilité effective de la méthode dépend également du pays'
+sylius.form.gateway_configuration.familywebdiffusion_klarna_payments.pay_later: Pay Later (Invoice, Pay in X)
+sylius.form.gateway_configuration.familywebdiffusion_klarna_payments.pay_now: Pay Now (Direct debit, Card)
+sylius.form.gateway_configuration.familywebdiffusion_klarna_payments.pay_over_time: Slice it
+sylius.form.gateway_configuration.familywebdiffusion_klarna_payments.direct_bank_transfer: Pay Now - Bank Transfer
+sylius.form.gateway_configuration.familywebdiffusion_klarna_payments.direct_debit: Pay Now - Direct debit

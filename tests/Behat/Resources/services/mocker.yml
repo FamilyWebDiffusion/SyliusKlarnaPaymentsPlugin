@@ -1,0 +1,7 @@
+services:
+
+    familywebdiffusion_sylius_klarna_payments_plugin.behat.mocker.klarna_payment:
+        public: true
+        class: Tests\FamilyWebDiffusion\SyliusKlarnaPaymentsPlugin\Behat\Mocker\KlarnaPaymentsApiClientMocker
+        arguments:
+            - '@sylius.behat.mocker'

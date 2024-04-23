@@ -1,0 +1,23 @@
+services:
+
+    FamilyWebDiffusion\SyliusKlarnaPaymentsPlugin\StateMachine\AbstractOrderProcessor:
+        abstract: true
+        arguments:
+            - '@payum'
+
+    FamilyWebDiffusion\SyliusKlarnaPaymentsPlugin\StateMachine\RefundOrderProcessor:
+        public: true
+        parent: FamilyWebDiffusion\SyliusKlarnaPaymentsPlugin\StateMachine\AbstractOrderProcessor
+
+    FamilyWebDiffusion\SyliusKlarnaPaymentsPlugin\StateMachine\CancelAuthorizedOrderProcessor:
+        public: true
+        parent: FamilyWebDiffusion\SyliusKlarnaPaymentsPlugin\StateMachine\AbstractOrderProcessor
+
+    FamilyWebDiffusion\SyliusKlarnaPaymentsPlugin\StateMachine\CaptureAuthorizedOrderProcessor:
+        public: true
+        parent: FamilyWebDiffusion\SyliusKlarnaPaymentsPlugin\StateMachine\AbstractOrderProcessor
+
+    FamilyWebDiffusion\SyliusKlarnaPaymentsPlugin\StateMachine\CaptureAfterShipProcessor:
+        public: true
+        arguments:
+            - '@sm.factory'

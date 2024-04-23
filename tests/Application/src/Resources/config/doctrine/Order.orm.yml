@@ -1,0 +1,8 @@
+Tests\FamilyWebDiffusion\SyliusKlarnaPaymentsPlugin\Entity\Order:
+    type: mappedSuperclass
+    table: sylius_order
+    fields:
+        klarnaSessionId:
+            type: text
+            nullable: true
+            column: klarna_session_id

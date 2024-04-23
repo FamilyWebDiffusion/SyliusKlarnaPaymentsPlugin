@@ -1,0 +1,47 @@
+services:
+    familywebdiffusion_sylius_klarna_payments_plugin.registry.payment_data_builder:
+        class: Sylius\Component\Registry\PrioritizedServiceRegistry
+        arguments:
+            - FamilyWebDiffusion\SyliusKlarnaPaymentsPlugin\DataTransformer\DataTransformerInterface
+            - payment data transformer
+
+    familywebdiffusion_sylius_klarna_payments_plugin.payment_data_builder:
+        class: FamilyWebDiffusion\SyliusKlarnaPaymentsPlugin\DataTransformer\PaymentDataTransformer
+        arguments:
+            - '@familywebdiffusion_sylius_klarna_payments_plugin.registry.payment_data_builder'
+
+    familywebdiffusion_sylius_klarna_payments_plugin.payment_data_builder.customer:
+        class: FamilyWebDiffusion\SyliusKlarnaPaymentsPlugin\DataTransformer\CustomerDataTransformer
+        tags:
+            - name: familywebdiffusion_sylius_klarna_payments_plugin.payment_data_builder
+              priority: 100
+
+    familywebdiffusion_sylius_klarna_payments_plugin.payment_data_builder.addresses:
+        class: FamilyWebDiffusion\SyliusKlarnaPaymentsPlugin\DataTransformer\AddressesDataTransformer
+        tags:
+            - name: familywebdiffusion_sylius_klarna_payments_plugin.payment_data_builder
+              priority: 80
+
+    familywebdiffusion_sylius_klarna_payments_plugin.payment_data_builder.order_lines:
+        class: FamilyWebDiffusion\SyliusKlarnaPaymentsPlugin\DataTransformer\OrderLinesDataTransformer
+        arguments:
+            - '@liip_imagine.cache.manager'
+        tags:
+            - name: familywebdiffusion_sylius_klarna_payments_plugin.payment_data_builder
+              priority: 60
+
+    familywebdiffusion_sylius_klarna_payments_plugin.payment_data_builder.shipment:
+        class: FamilyWebDiffusion\SyliusKlarnaPaymentsPlugin\DataTransformer\ShipmentDataTransformer
+        tags:
+            - name: familywebdiffusion_sylius_klarna_payments_plugin.payment_data_builder
+              priority: 40
+
+    familywebdiffusion_sylius_klarna_payments_plugin.payment_data_builder.tax:
+        class: FamilyWebDiffusion\SyliusKlarnaPaymentsPlugin\DataTransformer\TaxDataTransformer
+        tags:
+            - name: familywebdiffusion_sylius_klarna_payments_plugin.payment_data_builder
+              priority: 20
+
+    familywebdiffusion_sylius_klarna_payments_plugin.shipping_info_transformer:
+        class: FamilyWebDiffusion\SyliusKlarnaPaymentsPlugin\DataTransformer\ShippingInfoDataTransformer
+        public: true

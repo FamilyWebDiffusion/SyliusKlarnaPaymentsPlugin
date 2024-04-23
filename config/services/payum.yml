@@ -1,0 +1,40 @@
+services:
+
+    familywebdiffusion_sylius_klarna_payments_plugin.gateway_factory_builder:
+        class: Payum\Core\Bridge\Symfony\Builder\GatewayFactoryBuilder
+        public: true
+        arguments:
+            -  FamilyWebDiffusion\SyliusKlarnaPaymentsPlugin\Payum\Gateway\KlarnaPaymentsGatewayFactory
+        tags:
+            - { name: payum.gateway_factory_builder, factory: klarna_payments }
+
+    FamilyWebDiffusion\SyliusKlarnaPaymentsPlugin\Payum\KlarnaPaymentsApiClient:
+        public: true
+        arguments:
+            - '@FamilyWebDiffusion\SyliusKlarnaPaymentsPlugin\Client\HttpClient'
+            - '@familywebdiffusion_sylius_klarna_payments_plugin.payment_data_builder'
+            - '@familywebdiffusion_sylius_klarna_payments_plugin.shipping_info_transformer'
+
+    FamilyWebDiffusion\SyliusKlarnaPaymentsPlugin\Payum\Action\AuthorizeAction:
+        public: true
+        tags:
+            - { name: payum.action, factory: klarna_payments, alias: payum.action.authorize }
+        arguments:
+            - '@request_stack'
+
+    familywebdiffusion_sylius_klarna_payments_plugin.payum_action.capture_payment:
+        class: FamilyWebDiffusion\SyliusKlarnaPaymentsPlugin\Payum\Action\CapturePaymentAction
+        public: true
+        tags:
+            - { name: payum.action, factory: klarna_payments, alias: payum.action.capture_payment }
+
+    FamilyWebDiffusion\SyliusKlarnaPaymentsPlugin\Payum\Controller\AuthorizeByCallbackController:
+        parent: Payum\Bundle\PayumBundle\Controller\PayumController
+        public: true
+        calls:
+            - method: setContainer
+        tags: ['container.service_subscriber']
+
+    FamilyWebDiffusion\SyliusKlarnaPaymentsPlugin\Payum\PayumTokenHelper:
+        arguments:
+            - '@payum'

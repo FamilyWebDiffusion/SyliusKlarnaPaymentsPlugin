@@ -1,0 +1,11 @@
+sylius_order:
+    resources:
+        order:
+            classes:
+                model: Tests\FamilyWebDiffusion\SyliusKlarnaPaymentsPlugin\Entity\Order
+
+sylius_payment:
+    resources:
+        payment:
+            classes:
+                model: Tests\FamilyWebDiffusion\SyliusKlarnaPaymentsPlugin\Entity\Payment

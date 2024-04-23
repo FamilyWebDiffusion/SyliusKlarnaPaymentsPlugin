@@ -1,0 +1,8 @@
+services:
+    familywebdiffusion_sylius_klarna_payments_plugin.behat.context.ui.admin.managing_payment_method_klarna:
+        class: Tests\FamilyWebDiffusion\SyliusKlarnaPaymentsPlugin\Behat\Context\Ui\Admin\ManagingPaymentMethodContext
+        public: true
+        arguments:
+            - "@familywebdiffusion_sylius_klarna_payments_plugin.page.admin.payment_method.create"
+        tags:
+            - { name: fob.context_service }

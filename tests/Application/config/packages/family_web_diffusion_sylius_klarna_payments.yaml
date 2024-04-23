@@ -1,0 +1,6 @@
+imports:
+    - { resource: '@FamilyWebDiffusionSyliusKlarnaPaymentsPlugin/config/config.yml' }
+
+family_web_diffusion_sylius_klarna_payments:
+    client_retry_limit: 3
+    display_birthday: true

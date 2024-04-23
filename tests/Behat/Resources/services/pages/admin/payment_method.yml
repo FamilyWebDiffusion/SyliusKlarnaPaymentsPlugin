@@ -1,0 +1,7 @@
+services:
+    familywebdiffusion_sylius_klarna_payments_plugin.page.admin.payment_method.create:
+         class: Tests\FamilyWebDiffusion\SyliusKlarnaPaymentsPlugin\Behat\Page\Admin\PaymentMethod\CreatePage
+         parent: "sylius.behat.page.admin.crud.create"
+         public: false
+         arguments:
+             - "sylius_admin_payment_method_create"

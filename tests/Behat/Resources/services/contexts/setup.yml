@@ -1,0 +1,14 @@
+services:
+    familywebdiffusion_sylius_klarna_payments_plugin.behat.context.setup.klarna:
+        class: Tests\FamilyWebDiffusion\SyliusKlarnaPaymentsPlugin\Behat\Context\Setup\KlarnaContext
+        public: true
+        arguments:
+            - '@sylius.fixture.example_factory.payment_method'
+            - '@sylius.behat.shared_storage'
+            - '@sylius.repository.payment_method'
+            - '@sylius.manager.payment_method'
+            - '@familywebdiffusion_sylius_klarna_payments_plugin.behat.mocker.klarna_payment'
+            - '@sylius.behat.page.shop.checkout.select_shipping'
+            - '@sylius.behat.page.shop.checkout.select_payment'
+        tags:
+            - { name: fob.context_service }

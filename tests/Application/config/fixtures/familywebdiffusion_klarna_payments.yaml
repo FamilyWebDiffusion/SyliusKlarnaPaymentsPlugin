@@ -1,0 +1,215 @@
+sylius_fixtures:
+    suites:
+        familywebdiffusion_klarna_payments:
+            fixtures:
+                channel:
+                    priority: 0
+                    options:
+                        custom:
+                            de_web_store:
+                                name: "DE Web Store"
+                                code: "DE_WEB"
+                                locales:
+                                    - "de_DE"
+                                    - "en_US"
+                                    - "fr_FR"
+                                currencies:
+                                    - "EUR"
+                                enabled: true
+                                hostname: '%env(resolve:SYLIUS_FIXTURES_HOSTNAME)%'
+                shipping_method:
+                    options:
+                        custom:
+                            ups:
+                                code: 'dhl'
+                                name: 'DHL'
+                                enabled: true
+                                zone: 'WORLD'
+                                channels:
+                                    - 'DE_WEB'
+                payment_method:
+                    options:
+                        custom:
+                            klarna_pay_later:
+                                code: 'klarna_paylater'
+                                name: 'Klarna Pay Later'
+                                channels:
+                                    - 'DE_WEB'
+                                gatewayName: 'klarna_paylater'
+                                gatewayFactory: "klarna_payments"
+                                gatewayConfig:
+                                    api_zone: EU
+                                    sandbox: true
+                                    api_username: "%env(KLARNA_API_TEST_USERNAME)%"
+                                    api_password: "%env(KLARNA_API_TEST_PASSWORD)%"
+                                    payment_method: "pay_later"
+                                    factory_name: klarna_payments
+                                    use_authorize: 1
+                                enabled: true
+                            klarna_direct_bank_transert:
+                                code: 'klarna_direct_bank_transert'
+                                name: 'Klarna Direct'
+                                channels:
+                                    - 'DE_WEB'
+                                gatewayName: 'klarna_direct_bank_transert'
+                                gatewayFactory: "klarna_payments"
+                                gatewayConfig:
+                                    api_zone: EU
+                                    sandbox: true
+                                    api_username: "%env(KLARNA_API_TEST_USERNAME)%"
+                                    api_password: "%env(KLARNA_API_TEST_PASSWORD)%"
+                                    payment_method: "direct_bank_transfer"
+                                    factory_name: klarna_payments
+                                    use_authorize: 1
+                                enabled: true
+                            klarna_slice_it:
+                                code: 'klarna_pay_over_time'
+                                name: 'Klarna Slice It'
+                                channels:
+                                    - 'DE_WEB'
+                                gatewayName: 'klarna_pay_over_time'
+                                gatewayFactory: "klarna_payments"
+                                gatewayConfig:
+                                    api_zone: EU
+                                    sandbox: true
+                                    api_username: "%env(KLARNA_API_TEST_USERNAME)%"
+                                    api_password: "%env(KLARNA_API_TEST_PASSWORD)%"
+                                    payment_method: "pay_over_time"
+                                    factory_name: klarna_payments
+                                    use_authorize: 1
+                                enabled: true
+                            klarna_direct_debit:
+                                code: 'klarna_direct_debit'
+                                name: 'Klarna Direct Debit'
+                                channels:
+                                    - 'DE_WEB'
+                                gatewayName: 'klarna_direct_debit'
+                                gatewayFactory: "klarna_payments"
+                                gatewayConfig:
+                                    api_zone: EU
+                                    sandbox: true
+                                    api_username: "%env(KLARNA_API_TEST_USERNAME)%"
+                                    api_password: "%env(KLARNA_API_TEST_PASSWORD)%"
+                                    payment_method: "direct_debit"
+                                    factory_name: klarna_payments
+                                    use_authorize: 1
+                                enabled: true
+                            bank_direct:
+                                code: 'bank_direct'
+                                name: 'Bank Direct Transfert'
+                                channels:
+                                    - 'DE_WEB'
+                                enabled: true
+                tax_rate:
+                    options:
+                        custom:
+                            vat_tax:
+                                code: 'vat_tax_20'
+                                name: 'VAT Tax 20%'
+                                zone: 'WORLD'
+                                category: 'other'
+                                amount: 0.2
+                                included_in_price: true
+
+                shop_user:
+                    options:
+                        custom:
+                            -
+                                email: 'louise.ottopeters@test.de'
+                                first_name: 'Louise'
+                                last_name: 'Otto-Peters'
+                                password: '1234'
+                                gender: 'f'
+                            -   email: 'baumer+denied@test.de'
+                                first_name: 'Gertrud'
+                                last_name: 'Bäumer'
+                                password: '1234'
+                                gender: 'f'
+                            -   email: 'ihrer+require_signup@test.de'
+                                first_name: 'Emma'
+                                last_name: 'Ihrer'
+                                password: '1234'
+                                gender: 'f'
+
+                address:
+                    options:
+                        custom:
+                            -
+                                first_name: 'Louise'
+                                last_name: 'Otto-Peters'
+                                phone_number: '30 213577119'
+                                street: 'Arthur-Hoffmann-Straße 110'
+                                city: 'Leipzig'
+                                postcode: '04275'
+                                country_code: 'DE'
+                                province_name: 'Sachsen'
+                                customer: 'louise.ottopeters@test.de'
+                            -   first_name: 'Gertrud'
+                                last_name: 'Bäumer'
+                                phone_number: '30 213577129'
+                                street: 'Hünefeldzeile 16-18'
+                                city: 'Berlin'
+                                postcode: '12247'
+                                country_code: 'DE'
+                                province_name: 'Berlin'
+                                customer: 'baumer+denied@test.de'
+                            -   first_name: 'Emma'
+                                last_name: 'Ihrer'
+                                phone_number: '30 213577139'
+                                street: 'Donnersmarckallee 9'
+                                city: 'Berlin'
+                                postcode: '13465'
+                                country_code: 'DE'
+                                province_name: 'Berlin'
+                                customer: 'ihrer+require_signup@test.de'
+
+                product:
+                    options:
+                        custom:
+                            -   name: 'Winter cap'
+                                tax_category: 'other'
+                                channels:
+                                    - 'DE_WEB'
+                                main_taxon: 'caps_with_pompons'
+                                taxons:
+                                    - 'caps'
+                                    - 'caps_with_pompons'
+                                shipping_required: true
+                                images:
+                                    - { path: '@SyliusCoreBundle/Resources/fixtures/caps/cap_01.jpg', type: 'main' }
+
+                            -   name: 'Green cap'
+                                tax_category: 'other'
+                                channels:
+                                    - 'DE_WEB'
+                                main_taxon: 'simple_caps'
+                                taxons:
+                                    - 'caps'
+                                    - 'simple_caps'
+                                shipping_required: true
+                                images:
+                                    - { path: '@SyliusCoreBundle/Resources/fixtures/caps/cap_02.jpg', type: 'main' }
+
+                            -   name: 'White pompom cap'
+                                tax_category: 'other'
+                                channels:
+                                    - 'DE_WEB'
+                                main_taxon: 'caps_with_pompons'
+                                taxons:
+                                    - 'caps'
+                                    - 'caps_with_pompons'
+                                shipping_required: true
+                                images:
+                                    - { path: '@SyliusCoreBundle/Resources/fixtures/caps/cap_03.jpg', type: 'main' }
+
+                            -   name: 'Violet beanie'
+                                tax_category: 'other'
+                                channels:
+                                    - 'DE_WEB'
+                                main_taxon: 'simple_caps'
+                                taxons:
+                                    - 'caps'
+                                    - 'simple_caps'
+                                shipping_required: true
+                                images:
+                                    - { path: '@SyliusCoreBundle/Resources/fixtures/caps/cap_04.jpg', type: 'main' }

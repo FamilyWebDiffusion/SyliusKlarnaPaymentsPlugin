@@ -1,0 +1,7 @@
+familywebdiffusion_sylius_shop_payum_authorize_callback:
+    path: /payment/authorize_callback/{payum_token}
+    methods: [POST]
+    defaults:
+            _controller: FamilyWebDiffusion\SyliusKlarnaPaymentsPlugin\Payum\Controller\AuthorizeByCallbackController:doAction
+    requirements:
+        payum_token: .+

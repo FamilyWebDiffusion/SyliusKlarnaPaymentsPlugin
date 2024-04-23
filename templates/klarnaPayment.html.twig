@@ -1,0 +1,72 @@
+{%  set payment = order.lastPayment %}
+{% if payment is not null and
+    payment.method.gatewayConfig.factoryName == constant('\\FamilyWebDiffusion\\SyliusKlarnaPaymentsPlugin\\Payum\\Gateway\\KlarnaPaymentsGatewayFactory::NAME') and
+    order.klarnaSessionId is not null
+%}
+
+    {% set klarnaMethod =  payment.method.gatewayConfig.config.payment_method %}
+    {%  set klarnaSession = getKlarnaPaymentSession(order) %}
+
+    {% if klarnaMethod is not null and klarnaSession is not null %}
+        <div class="content">
+            <img src="{{ klarnaSession.getDescriptiveAssetUrl(klarnaMethod)|e('html_attr') }}" alt="Klarna" />
+            <div id="klarna-payments-container"></div>
+
+            <script>
+                const completeKlarnaOrder = {{ getCompleteKlarnaOrder(payment)|json_encode|raw }};
+
+                window.klarnaAsyncCallback = function () {
+                    Klarna.Payments.init({
+                        client_token: '{{ klarnaSession.clientToken }}'
+                    });
+
+                    Klarna.Payments.load({
+                        container: '#klarna-payments-container',
+                        payment_method_category: '{{ klarnaMethod }}'
+                    }, function (res) {
+                        if (res.show_form === false) {
+                            let wrapperEl = document.getElementById('klarna-payments-container-wrapper');
+                            if (wrapperEl) {
+                                wrapperEl.style.display = 'none';
+                            }
+                        }
+                    });
+                };
+
+                form = document.querySelector("form[name='sylius_checkout_complete']");
+
+                form.onsubmit = function (e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+
+                    if(!completeKlarnaOrder.hasOwnProperty('billing_address')) {
+                        return;
+                    }
+
+                    Klarna.Payments.authorize({
+                            payment_method_category: '{{ klarnaMethod }}'
+                        },
+                        completeKlarnaOrder
+                        , function (res) {
+                            if (res.show_form && res.approved) {
+
+                                form.submit();
+                                return;
+                            }
+                            if (res.show_form && !res.approved) {
+                                // klarna shows errors in its own popup
+                            }
+                            if (!res.show_form && !res.approved) {
+                                let wrapperEl = document.getElementById('klarna-payments-container-wrapper');
+                                if (wrapperEl) {
+                                    wrapperEl.style.display = 'none';
+                                }
+                            }
+                        })
+                    return false;
+                };
+            </script>
+            <script src="https://x.klarnacdn.net/kp/lib/v1/api.js" async></script>
+        </div>
+    {% endif %}
+{% endif %}

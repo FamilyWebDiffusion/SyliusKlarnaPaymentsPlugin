@@ -1,0 +1,16 @@
+services:
+    _defaults:
+        autowire: true
+        autoconfigure: true
+
+imports:
+    - { resource: "services/payum.yml" }
+    - { resource: "services/form.yml" }
+    - { resource: "services/resolvers.yml"}
+    - { resource: "services/data_transformers.yml"}
+    - { resource: "services/client.yml"}
+    - { resource: "services/state_machine.yml"}
+    - { resource: "services/event_listener.yml"}
+    - { resource: "services/helper.yml" }
+    - { resource: "services/twig.yml"}
+

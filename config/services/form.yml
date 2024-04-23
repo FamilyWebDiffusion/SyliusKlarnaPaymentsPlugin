@@ -1,0 +1,5 @@
+services:
+    FamilyWebDiffusion\SyliusKlarnaPaymentsPlugin\Form\Type\KlarnaPaymentsGatewayConfigurationType:
+        tags:
+            - { name: sylius.gateway_configuration_type, type: klarna_payments, label: sylius.gateway_factory.familywebdiffusion_klarna_payments.label }
+            - { name: form.type }

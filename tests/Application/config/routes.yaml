@@ -1,0 +1,2 @@
+family_web_diffusion_sylius_klarna_payments_plugin:
+    resource: "@FamilyWebDiffusionSyliusKlarnaPaymentsPlugin/config/routes.yml"

@@ -1,0 +1,50 @@
+family_web_diffusion_sylius_klarna_payments:
+    servers_test:
+        EU: https://api.playground.klarna.com/
+        NA: https://api-na.playground.klarna.com/
+        OC: https://api-oc.playground.klarna.com/
+    servers_prod:
+        EU: https://api.klarna.com/
+        NA: https://api-na.klarna.com/
+        OC: https://api-oc.klarna.com/
+    api_payment_endpoint: /payments/v1/
+    api_order_endpoint: /ordermanagement/v1/orders/
+    client_retry_limit: 3
+    display_birthday: true
+
+winzou_state_machine:
+    sylius_payment:
+        callbacks:
+            before:
+                familywebdiffusion.klarna_payments_refund:
+                    on: [ "refund" ]
+                    do: [ '@FamilyWebDiffusion\SyliusKlarnaPaymentsPlugin\StateMachine\RefundOrderProcessor', "processPayment" ]
+                    args: [ "object" ]
+                familywebdiffusion.klarna_payments_cancel_authorized:
+                    on: [ "cancel" ]
+                    do: [ '@FamilyWebDiffusion\SyliusKlarnaPaymentsPlugin\StateMachine\CancelAuthorizedOrderProcessor', "processPayment" ]
+                    args: [ "object" ]
+                familywebdiffusion.klarna_payments_complete_authorized:
+                    on: [ "complete" ]
+                    do: [ '@FamilyWebDiffusion\SyliusKlarnaPaymentsPlugin\StateMachine\CaptureAuthorizedOrderProcessor', "processPayment" ]
+                    args: [ "object" ]
+            after:
+                familywebdiffusion.klarna_payments_cancelled:
+                    on: [ "cancel", "fail" ]
+                    do: ['FamilyWebDiffusion\SyliusKlarnaPaymentsPlugin\EventListener\PaymentFailedEventListener', "cancelExistingKlarnaAuthorizationToken"]
+                    args: [ "object" ]
+
+    sylius_shipment:
+        callbacks:
+            after:
+                familywebdiffusion.shipment_shipped:
+                    on: [ "ship" ]
+                    do: [ '@FamilyWebDiffusion\SyliusKlarnaPaymentsPlugin\StateMachine\CaptureAfterShipProcessor', "processOrder" ]
+                    args: [ "object.getOrder()" ]
+
+sylius_ui:
+    events:
+        sylius.shop.checkout.complete.before_navigation:
+            blocks:
+                klarna_payment:
+                    template: '@FamilyWebDiffusionSyliusKlarnaPaymentsPlugin/klarnaPayment.html.twig'

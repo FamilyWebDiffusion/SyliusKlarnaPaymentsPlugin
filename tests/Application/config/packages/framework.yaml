@@ -7,3 +7,6 @@ framework:
     serializer:
         mapping:
             paths: [ '%kernel.project_dir%/config/serialization' ]
+    http_client:
+        default_options:
+            max_duration: 10

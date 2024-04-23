@@ -1,0 +1,8 @@
+services:
+    
+    FamilyWebDiffusion\SyliusKlarnaPaymentsPlugin\Resolver\KlarnaPaymentMethodResolverDecorator:
+        decorates: 'sylius.payment_methods_resolver'
+        arguments:
+          - '@FamilyWebDiffusion\SyliusKlarnaPaymentsPlugin\Resolver\KlarnaPaymentMethodResolverDecorator.inner'
+          - '@service_container'
+          - '@FamilyWebDiffusion\SyliusKlarnaPaymentsPlugin\Payum\PayumTokenHelper'
